@@ -1,0 +1,150 @@
+function init(self)
+	math.randomseed (os.time ())
+	m = 1
+	score = 0
+	
+	msg.post(".", "acquire_input_focus")
+	msg.post("@render:", "use_fixed_fit_projection", { near = -1, far = 1 })
+
+end
+
+function yes(self)
+	rt = socket.gettime()
+	while socket.gettime() <= rt+3 do
+		print ('dobrovo untra')
+	end
+end
+
+function on_input(self, action_id, action)
+	if action_id == hash("touch") and action.pressed then
+
+		pos = go.get_position("#start")
+
+		local dist = 50
+		
+		if vmath.length(pos - (vmath.vector3(action.x, action.y, pos.z))) < dist then 
+			label.set_text ("#start", "Restart")
+			label.set_text ("#counter", "Score: " ..0)
+
+			endOf = true
+			score = 0
+			choisenColor = 2
+			label.set_text ("#endGame", "")
+			
+
+			local x = 25
+			local y = 550
+
+			amountOfReds = 0
+			amountOfBlues = 0
+
+			for i = m, 99+m do
+				go.delete("/instance" ..(i-1))
+			end
+
+			mt = {}
+			for i=0,9 do
+				mt[i] = {}
+				for j=0,9 do
+					mt[i][j] = 0
+				end
+			end
+
+			for i = m, 99+m do
+				if i > 100 then
+					i2 = i -100
+					n = i2/10 - (i2/10)%1
+					p = i2 %10
+				else
+					i2 = i
+					n = i2/10 - (i2/10)%1
+					p = i2 %10
+				end
+					
+				
+				if math.random(0, 1) == 0 then
+					if amountOfBlues ~= 50 then
+						obj = factory.create ("/kruzki#blue", vmath.vector3 (x, y , 1), nil)
+						amountOfBlues = amountOfBlues + 1
+					else
+						obj = factory.create ("/kruzki#reds", vmath.vector3 (x, y , 1), nil)
+						amountOfReds = amountOfReds + 1
+						if n <= 9 and p <= 9 then
+							mt[n][p] = 1
+						end
+					end
+				
+				else 
+					if amountOfReds ~= 50 then
+						obj = factory.create ("/kruzki#reds", vmath.vector3 (x, y , 1), nil)
+						amountOfReds = amountOfReds + 1
+						if n <= 9 and p <= 9 then
+							mt[n][p] = 1
+						end
+					else
+						obj = factory.create ("/kruzki#blue", vmath.vector3 (x, y , 1), nil)
+						amountOfBlues = amountOfBlues + 1
+					end
+				end
+				
+				if m == 1 then
+					mimus = 0
+				else 
+					mimus = 1
+				end
+			
+				if x == 475 then 
+					x = 25
+					y = y - 50
+				else 
+					x = x + 50
+
+				end
+			end
+		
+
+			if mimus == 1 then 
+				m = m - 100
+			else
+				m = m + 100
+
+			end 
+			
+		else
+			for i = m, 99+m do
+				pos = go.get_position("/instance"..(i-1))
+				
+				if (vmath.length(pos - (vmath.vector3(action.x, action.y, pos.z)))) <= 25 and endOf then 
+					inst = ("/instance"..(i-1))
+
+					if i > 100 then
+						i2 = i -100
+						n = i2/10 - (i2/10)%1
+						p = i2 %10
+					else
+						i2 = i
+						n = i2/10 - (i2/10)%1
+						p = i2 %10
+					end
+					
+					if choisenColor == 2 then
+						score = score + 1
+						choisenColor = mt[n][p]
+					elseif choisenColor == mt[n][p] then
+						score = score + 1
+					else
+						label.set_text ("#endGame", "END")
+						endOf = false
+					end
+
+
+					label.set_text ("#counter", "Score: " ..(score))
+					go.set_position(pos - vmath.vector3(0, 0, 1), "/instance" ..(i-1)     ) 
+					break
+				end
+			end
+		end
+
+		--yes (self)
+	end
+end

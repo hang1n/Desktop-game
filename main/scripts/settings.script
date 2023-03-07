@@ -1,0 +1,5 @@
+go.property("my_atlas", resource.atlas("/atlas.circlesi"))
+
+function init(self)
+	go.set("#sprite", "image", self.my_atlas)
+end

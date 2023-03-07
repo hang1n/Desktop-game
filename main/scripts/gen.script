@@ -1,0 +1,17 @@
+function init(self)
+	local x = 25
+	local y = 550
+	
+	for i = 1, 100 do
+		obj = factory.create ("/kruzki#greys", vmath.vector3 (x, y , 1), nil)
+
+		if x == 475 then 
+			x = 25
+			y = y - 50
+		else 
+			x = x + 50
+
+		end
+	end
+	
+end
